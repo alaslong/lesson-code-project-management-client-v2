@@ -1,8 +1,9 @@
 // src/pages/SignupPage.jsx
 
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
+import { AuthContext } from "../context/auth.context";
 
 const API_URL = "http://localhost:5005";
 
@@ -12,6 +13,8 @@ function SignupPage(props) {
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [errorMessage, setErrorMessage] = useState(undefined);
+
+  const { storeToken, authenticateUser } = useContext(AuthContext);
 
   const navigate = useNavigate();
   
@@ -31,13 +34,15 @@ function SignupPage(props) {
     // If the request resolves with an error, set the error message in the state
     axios.post(`${API_URL}/auth/signup`, requestBody)
       .then((response) => {
-        navigate('/login');
+        storeToken(response.data.authToken);
+        authenticateUser()
+        navigate('/');
       })
       .catch((error) => {
         const errorDescription = error.response.data.message;
         setErrorMessage(errorDescription);
       })
-      
+
   };
 
   
